@@ -41,6 +41,7 @@ Comandos:
   migrate           Executa migrations
   test              Executa testes (composer run-script test)
   coverage          Executa testes com cobertura
+  assets            Compila assets (asset-map:compile)
   cache-clear       Limpa cache do Symfony
   console <args>    Roda php bin/console <args>
   composer <args>   Roda composer <args>
@@ -97,6 +98,10 @@ case "$cmd" in
   coverage)
     check_docker
     phpi composer run-script test:coverage
+    ;;
+  assets)
+    check_docker
+    phpi php bin/console asset-map:compile
     ;;
   cache-clear)
     check_docker

@@ -40,6 +40,9 @@ jobs:
       - name: Install dependencies
         run: composer install --no-ansi --no-interaction --no-progress --prefer-dist
 
+      - name: Compile asset map
+        run: php bin/console asset-map:compile
+
       - name: Prepare test env
         run: |
           php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
@@ -76,6 +79,9 @@ jobs:
 
       - name: Install dependencies
         run: composer install --no-ansi --no-interaction --no-progress --prefer-dist
+
+      - name: Compile asset map
+        run: php bin/console asset-map:compile
 
       - name: Prepare test env
         run: |

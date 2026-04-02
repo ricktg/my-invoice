@@ -124,6 +124,9 @@ Para facilitar o dia a dia, use o script `scripts/dev.sh`:
 # Rodar testes
 ./scripts/dev.sh test
 
+# Compilar assets
+./scripts/dev.sh assets
+
 # Ver ajuda completa
 ./scripts/dev.sh help
 ```
@@ -135,6 +138,7 @@ No PowerShell, use `scripts/dev.ps1`:
 .\scripts\dev.ps1 install
 .\scripts\dev.ps1 migrate
 .\scripts\dev.ps1 test
+.\scripts\dev.ps1 assets
 .\scripts\dev.ps1 help
 ```
 

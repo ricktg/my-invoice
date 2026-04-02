@@ -54,6 +54,7 @@ Comandos:
   migrate           Executa migrations
   test              Executa testes (composer run-script test)
   coverage          Executa testes com cobertura
+  assets            Compila assets (asset-map:compile)
   cache-clear       Limpa cache do Symfony
   console <args>    Roda php bin/console <args>
   composer <args>   Roda composer <args>
@@ -84,6 +85,7 @@ switch ($Command) {
     "migrate" { Test-DockerAvailable; Invoke-Php @("php", "bin/console", "doctrine:migrations:migrate", "--no-interaction") }
     "test" { Test-DockerAvailable; Invoke-Php @("composer", "run-script", "test") }
     "coverage" { Test-DockerAvailable; Invoke-Php @("composer", "run-script", "test:coverage") }
+    "assets" { Test-DockerAvailable; Invoke-Php @("php", "bin/console", "asset-map:compile") }
     "cache-clear" { Test-DockerAvailable; Invoke-Php @("php", "bin/console", "cache:clear") }
     "console" {
         Test-DockerAvailable
