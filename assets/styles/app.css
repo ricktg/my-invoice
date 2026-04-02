@@ -104,6 +104,12 @@ a {
     margin-top: 6px;
 }
 
+.profile-card .profile-billing-grid + .profile-billing-grid {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #e6edf7;
+}
+
 .profile-password-fields > div + div {
     margin-top: 12px;
 }

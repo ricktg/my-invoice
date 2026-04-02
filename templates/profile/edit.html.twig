@@ -12,17 +12,17 @@
             <div class="card form-card profile-card">
                 <div class="section-title">Preferências de cobrança</div>
                 {{ form_errors(form) }}
-                <div class="form-grid">
+                <div class="form-grid profile-billing-grid">
                     {{ form_row(form.jobDescription) }}
                 </div>
-                <div class="form-grid">
+                <div class="form-grid profile-billing-grid">
                     {{ form_row(form.defaultRateValue) }}
                     {{ form_row(form.defaultRateType) }}
                 </div>
-                <div class="form-grid" id="hourly-hours-wrapper">
+                <div class="form-grid profile-billing-grid" id="hourly-hours-wrapper">
                     {{ form_row(form.defaultHourlyHoursPerBusinessDay) }}
                 </div>
-                <div class="form-grid">
+                <div class="form-grid profile-billing-grid">
                     {{ form_row(form.defaultDailyRateCurrency) }}
                 </div>
             </div>
