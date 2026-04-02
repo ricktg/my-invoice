@@ -92,16 +92,9 @@ final class InvoiceController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $invoice->setDueDate($invoice->getIssueDate()->modify('+10 days'));
-            $businessDays = $businessDayCalculator->countWeekdaysInMonth($invoice->getReferenceMonth());
-            $hourlyMonthQuantity = number_format($businessDays * $defaultHourlyHoursPerBusinessDay, 2, '.', '');
 
             foreach ($invoice->getItems() as $item) {
                 $item->setInvoice($invoice);
-                if ($item->getBillingType() === InvoiceItem::BILLING_DAILY_RATE) {
-                    $item->setQuantity((string) $businessDays);
-                } elseif ($item->getBillingType() === InvoiceItem::BILLING_HOURLY_RATE) {
-                    $item->setQuantity($hourlyMonthQuantity);
-                }
             }
 
             $entityManager->persist($invoice);
@@ -126,7 +119,6 @@ final class InvoiceController extends AbstractController
     public function edit(
         Invoice $invoice,
         Request $request,
-        BusinessDayCalculator $businessDayCalculator,
         EntityManagerInterface $entityManager,
     ): Response {
         /** @var User $user */
