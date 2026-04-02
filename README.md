@@ -125,6 +125,16 @@ Para facilitar o dia a dia, use o script `scripts/dev.sh`:
 ./scripts/dev.sh help
 ```
 
+No PowerShell, use `scripts/dev.ps1`:
+
+```powershell
+.\scripts\dev.ps1 up
+.\scripts\dev.ps1 install
+.\scripts\dev.ps1 migrate
+.\scripts\dev.ps1 test
+.\scripts\dev.ps1 help
+```
+
 ## Estrutura do projeto
 
 - `src/Entity` - entidades de domínio
