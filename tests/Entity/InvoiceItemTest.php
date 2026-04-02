@@ -56,6 +56,7 @@ final class InvoiceItemTest extends TestCase
             ->setQuantity('22.00');
 
         self::assertSame('22', $item->getDisplayQuantity());
+        self::assertSame('Daily rate', $item->getBillingTypeLabel());
     }
 
     public function testValidatorBuildsViolationWhenQuantityIsNotPositive(): void
