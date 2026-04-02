@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Versão da release (ex.: v1.0.0)"
+        required: true
+        type: string
+      release_name:
+        description: "Nome da release (opcional)"
+        required: false
+        default: ""
+        type: string
+      prerelease:
+        description: "Marcar como pre-release?"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate version format
+        run: |
+          VERSION="${{ inputs.version }}"
+          if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([\-+][0-9A-Za-z\.-]+)?$ ]]; then
+            echo "Versão inválida: $VERSION"
+            echo "Use formato SemVer com prefixo v, por exemplo: v1.2.3 ou v1.2.3-rc.1"
+            exit 1
+          fi
+
+      - name: Check if tag already exists
+        run: |
+          VERSION="${{ inputs.version }}"
+          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+            echo "A tag $VERSION já existe."
+            exit 1
+          fi
+
+      - name: Create and push git tag
+        run: |
+          VERSION="${{ inputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$VERSION" -m "Release $VERSION"
+          git push origin "$VERSION"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.version }}
+          name: ${{ inputs.release_name != '' && inputs.release_name || inputs.version }}
+          generate_release_notes: true
+          prerelease: ${{ inputs.prerelease }}
