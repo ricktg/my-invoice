@@ -90,7 +90,7 @@ jobs:
         run: php -d xdebug.mode=coverage bin/phpunit --coverage-clover build/logs/clover.xml --coverage-html build/coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           files: build/logs/clover.xml
           use_oidc: true
