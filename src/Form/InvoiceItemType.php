@@ -20,13 +20,14 @@ class InvoiceItemType extends AbstractType
                 'label' => 'Tipo de cobrança',
                 'choices' => [
                     'Daily rate' => InvoiceItem::BILLING_DAILY_RATE,
+                    'Hourly rate' => InvoiceItem::BILLING_HOURLY_RATE,
                     'Cobrança única / reembolso' => InvoiceItem::BILLING_ONE_OFF,
                 ],
             ])
             ->add('description', null, ['label' => 'Descrição'])
             ->add('quantity', NumberType::class, [
                 'label' => 'Quantidade',
-                'scale' => 0,
+                'scale' => 2,
                 'html5' => true,
                 'attr' => [
                     'step' => 1,

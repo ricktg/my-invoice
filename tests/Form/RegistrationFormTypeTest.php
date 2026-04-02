@@ -19,6 +19,7 @@ final class RegistrationFormTypeTest extends TypeTestCaseWithValidator
             ],
             'jobDescription' => 'Senior Software Engineer',
             'defaultDailyRate' => '1200.00',
+            'defaultHourlyRate' => '135.00',
             'defaultDailyRateCurrency' => 'CAD',
         ];
 
@@ -30,6 +31,7 @@ final class RegistrationFormTypeTest extends TypeTestCaseWithValidator
         self::assertSame('new.user@example.com', $model->getEmail());
         self::assertSame('Senior Software Engineer', $model->getJobDescription());
         self::assertSame('1200', $model->getDefaultDailyRate());
+        self::assertSame('135', $model->getDefaultHourlyRate());
         self::assertSame('CAD', $model->getDefaultDailyRateCurrency());
         self::assertSame('Abc@1234', $form->get('plainPassword')->getData());
     }

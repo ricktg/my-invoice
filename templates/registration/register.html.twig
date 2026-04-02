@@ -26,8 +26,11 @@
                 <div class="register-form-grid">
                     {{ form_row(registrationForm.jobDescription) }}
                     <div class="form-grid">
-                    {{ form_row(registrationForm.defaultDailyRate) }}
-                    {{ form_row(registrationForm.defaultDailyRateCurrency) }}
+                        {{ form_row(registrationForm.defaultDailyRate) }}
+                        {{ form_row(registrationForm.defaultHourlyRate) }}
+                    </div>
+                    <div class="form-grid">
+                        {{ form_row(registrationForm.defaultDailyRateCurrency) }}
                     </div>
                 </div>
             </div>

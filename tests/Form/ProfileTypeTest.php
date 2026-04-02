@@ -13,9 +13,14 @@ final class ProfileTypeTest extends TypeTestCaseWithValidator
     {
         $formData = [
             'jobDescription' => 'Software Consultant',
-            'defaultDailyRate' => '850.00',
+            'defaultRateValue' => '120.00',
+            'defaultRateType' => 'hourly_rate',
+            'defaultHourlyHoursPerBusinessDay' => '8.00',
             'defaultDailyRateCurrency' => 'USD',
-            'newPassword' => '',
+            'newPassword' => [
+                'first' => '',
+                'second' => '',
+            ],
         ];
 
         $model = new User();
@@ -24,8 +29,10 @@ final class ProfileTypeTest extends TypeTestCaseWithValidator
 
         self::assertTrue($form->isSynchronized());
         self::assertSame('Software Consultant', $model->getJobDescription());
-        self::assertSame('850', $model->getDefaultDailyRate());
         self::assertSame('USD', $model->getDefaultDailyRateCurrency());
-        self::assertNull($form->get('newPassword')->getData());
+        self::assertSame('120', (string) $form->get('defaultRateValue')->getData());
+        self::assertSame('hourly_rate', $form->get('defaultRateType')->getData());
+        self::assertSame('8', $model->getDefaultHourlyHoursPerBusinessDay());
+        self::assertSame('', (string) $form->get('newPassword')->getData());
     }
 }

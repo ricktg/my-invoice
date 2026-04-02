@@ -69,12 +69,21 @@ final class InvoiceController extends AbstractController
             ? $user->getJobDescription()
             : 'Service fee';
         $defaultDailyRate = $user->getDefaultDailyRate() ?? '0.00';
+        $defaultHourlyRate = $user->getDefaultHourlyRate() ?? '0.00';
+        $defaultHourlyHoursPerBusinessDay = (float) ($user->getDefaultHourlyHoursPerBusinessDay() ?? '8');
+        if ($defaultHourlyHoursPerBusinessDay <= 0) {
+            $defaultHourlyHoursPerBusinessDay = 8.0;
+        }
+        $defaultBillingType = $user->getDefaultDailyRate() !== null
+            ? InvoiceItem::BILLING_DAILY_RATE
+            : ($user->getDefaultHourlyRate() !== null ? InvoiceItem::BILLING_HOURLY_RATE : InvoiceItem::BILLING_DAILY_RATE);
         $businessDays = $businessDayCalculator->countWeekdaysInMonth($invoice->getReferenceMonth());
+        $hourlyMonthQuantity = number_format($businessDays * $defaultHourlyHoursPerBusinessDay, 2, '.', '');
         $invoice->addItem((new InvoiceItem())
             ->setDescription($defaultDescription)
-            ->setBillingType(InvoiceItem::BILLING_DAILY_RATE)
-            ->setQuantity((string) $businessDays)
-            ->setUnitPrice($defaultDailyRate));
+            ->setBillingType($defaultBillingType)
+            ->setQuantity($defaultBillingType === InvoiceItem::BILLING_DAILY_RATE ? (string) $businessDays : $hourlyMonthQuantity)
+            ->setUnitPrice($defaultBillingType === InvoiceItem::BILLING_DAILY_RATE ? $defaultDailyRate : $defaultHourlyRate));
 
         $form = $this->createForm(InvoiceType::class, $invoice, [
             'owner' => $user,
@@ -84,11 +93,14 @@ final class InvoiceController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $invoice->setDueDate($invoice->getIssueDate()->modify('+10 days'));
             $businessDays = $businessDayCalculator->countWeekdaysInMonth($invoice->getReferenceMonth());
+            $hourlyMonthQuantity = number_format($businessDays * $defaultHourlyHoursPerBusinessDay, 2, '.', '');
 
             foreach ($invoice->getItems() as $item) {
                 $item->setInvoice($invoice);
                 if ($item->getBillingType() === InvoiceItem::BILLING_DAILY_RATE) {
                     $item->setQuantity((string) $businessDays);
+                } elseif ($item->getBillingType() === InvoiceItem::BILLING_HOURLY_RATE) {
+                    $item->setQuantity($hourlyMonthQuantity);
                 }
             }
 
@@ -104,6 +116,9 @@ final class InvoiceController extends AbstractController
             'title' => 'Nova invoice',
             'is_edit' => false,
             'invoice' => null,
+            'default_daily_rate' => $defaultDailyRate,
+            'default_hourly_rate' => $defaultHourlyRate,
+            'default_hourly_hours_per_business_day' => number_format($defaultHourlyHoursPerBusinessDay, 2, '.', ''),
         ]);
     }
 
@@ -128,11 +143,18 @@ final class InvoiceController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $invoice->setDueDate($invoice->getIssueDate()->modify('+10 days'));
             $businessDays = $businessDayCalculator->countWeekdaysInMonth($invoice->getReferenceMonth());
+            $defaultHourlyHoursPerBusinessDay = (float) ($user->getDefaultHourlyHoursPerBusinessDay() ?? '8');
+            if ($defaultHourlyHoursPerBusinessDay <= 0) {
+                $defaultHourlyHoursPerBusinessDay = 8.0;
+            }
+            $hourlyMonthQuantity = number_format($businessDays * $defaultHourlyHoursPerBusinessDay, 2, '.', '');
 
             foreach ($invoice->getItems() as $item) {
                 $item->setInvoice($invoice);
                 if ($item->getBillingType() === InvoiceItem::BILLING_DAILY_RATE) {
                     $item->setQuantity((string) $businessDays);
+                } elseif ($item->getBillingType() === InvoiceItem::BILLING_HOURLY_RATE) {
+                    $item->setQuantity($hourlyMonthQuantity);
                 }
             }
 
@@ -147,6 +169,9 @@ final class InvoiceController extends AbstractController
             'title' => 'Editar invoice',
             'is_edit' => true,
             'invoice' => $invoice,
+            'default_daily_rate' => $user->getDefaultDailyRate() ?? '0.00',
+            'default_hourly_rate' => $user->getDefaultHourlyRate() ?? '0.00',
+            'default_hourly_hours_per_business_day' => $user->getDefaultHourlyHoursPerBusinessDay() ?? '8.00',
         ]);
     }
 

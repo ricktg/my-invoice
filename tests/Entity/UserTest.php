@@ -30,6 +30,8 @@ final class UserTest extends TestCase
             ->setPassword('hash123')
             ->setJobDescription('  Senior Engineer  ')
             ->setDefaultDailyRate('950.00')
+            ->setDefaultHourlyRate('120.00')
+            ->setDefaultHourlyHoursPerBusinessDay('7.50')
             ->setDefaultDailyRateCurrency(' cad ');
 
         $user->eraseCredentials();
@@ -37,6 +39,8 @@ final class UserTest extends TestCase
         self::assertSame('hash123', $user->getPassword());
         self::assertSame('Senior Engineer', $user->getJobDescription());
         self::assertSame('950.00', $user->getDefaultDailyRate());
+        self::assertSame('120.00', $user->getDefaultHourlyRate());
+        self::assertSame('7.50', $user->getDefaultHourlyHoursPerBusinessDay());
         self::assertSame('CAD', $user->getDefaultDailyRateCurrency());
     }
 
@@ -45,10 +49,14 @@ final class UserTest extends TestCase
         $user = (new User())
             ->setJobDescription(null)
             ->setDefaultDailyRate(null)
+            ->setDefaultHourlyRate(null)
+            ->setDefaultHourlyHoursPerBusinessDay(null)
             ->setDefaultDailyRateCurrency(null);
 
         self::assertNull($user->getJobDescription());
         self::assertNull($user->getDefaultDailyRate());
+        self::assertNull($user->getDefaultHourlyRate());
+        self::assertNull($user->getDefaultHourlyHoursPerBusinessDay());
         self::assertNull($user->getDefaultDailyRateCurrency());
     }
 }

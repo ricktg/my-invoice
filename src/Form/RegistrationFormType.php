@@ -70,6 +70,15 @@ class RegistrationFormType extends AbstractType
                     'placeholder' => 'Ex.: 850.00',
                 ],
             ])
+            ->add('defaultHourlyRate', NumberType::class, [
+                'label' => 'Valor por hora padrão',
+                'required' => false,
+                'scale' => 2,
+                'html5' => true,
+                'attr' => [
+                    'placeholder' => 'Ex.: 120.00',
+                ],
+            ])
             ->add('defaultDailyRateCurrency', ChoiceType::class, [
                 'label' => 'Moeda padrão',
                 'required' => false,

@@ -58,13 +58,19 @@ docker compose up -d --build
 docker compose exec phpi composer install
 ```
 
-3. Rode as migrations:
+3.  Compila os assets:
+
+```bash
+docker compose exec phpi php bin/console asset-map:compile
+```
+
+4.  Rode as migrations:
 
 ```bash
 docker compose exec phpi php bin/console doctrine:migrations:migrate --no-interaction
 ```
 
-4. Acesse no navegador:
+5.  Acesse no navegador:
 
 - App: `http://localhost:8282`
 
