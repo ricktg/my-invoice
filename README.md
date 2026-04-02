@@ -104,6 +104,27 @@ docker compose exec phpi php bin/console doctrine:migrations:migrate --no-intera
 docker compose exec phpi php bin/console lint:twig templates
 ```
 
+## Atalhos para Docker
+
+Para facilitar o dia a dia, use o script `scripts/dev.sh`:
+
+```bash
+# Subir ambiente
+./scripts/dev.sh up
+
+# Instalar dependências
+./scripts/dev.sh install
+
+# Rodar migrations
+./scripts/dev.sh migrate
+
+# Rodar testes
+./scripts/dev.sh test
+
+# Ver ajuda completa
+./scripts/dev.sh help
+```
+
 ## Estrutura do projeto
 
 - `src/Entity` - entidades de domínio
