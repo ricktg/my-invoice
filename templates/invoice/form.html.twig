@@ -76,6 +76,9 @@
         const currencyInput = document.getElementById('invoice_currency');
         const totalPreview = document.getElementById('invoice-total-preview');
         const totalCurrency = document.getElementById('invoice-total-currency');
+        const defaultDailyRate = '{{ default_daily_rate|default('0.00') }}';
+        const defaultHourlyRate = '{{ default_hourly_rate|default('0.00') }}';
+        const defaultHourlyHoursPerBusinessDay = Number('{{ default_hourly_hours_per_business_day|default('8.00') }}');
 
         const countBusinessDays = (year, month) => {
             const lastDay = new Date(year, month, 0).getDate();
@@ -89,12 +92,73 @@
             return count;
         };
 
-        const updateDailyRateQuantities = () => {
-            if (!referenceMonthInput || !/^\d{4}-\d{2}$/.test(referenceMonthInput.value)) {
+        const applyQuantityFieldRules = (row) => {
+            const typeField = row.querySelector('select[id$="_billingType"]');
+            const quantityField = row.querySelector('input[id$="_quantity"]');
+            if (!typeField || !quantityField) {
                 return;
             }
-            const [year, month] = referenceMonthInput.value.split('-').map(Number);
-            const businessDays = String(countBusinessDays(year, month));
+
+            if (typeField.value === 'daily_rate') {
+                quantityField.step = '1';
+                quantityField.value = String(Math.round(Number(quantityField.value || 0)));
+            } else if (typeField.value === 'hourly_rate') {
+                quantityField.step = '0.25';
+            } else {
+                quantityField.step = '1';
+            }
+        };
+
+        const applyDefaultUnitPriceByType = (row) => {
+            const typeField = row.querySelector('select[id$="_billingType"]');
+            const unitPriceField = row.querySelector('input[id$="_unitPrice"]');
+            if (!typeField || !unitPriceField) {
+                return;
+            }
+
+            const currentValue = Number(unitPriceField.value || 0);
+            if (currentValue > 0) {
+                return;
+            }
+
+            if (typeField.value === 'daily_rate') {
+                unitPriceField.value = defaultDailyRate;
+            } else if (typeField.value === 'hourly_rate') {
+                unitPriceField.value = defaultHourlyRate;
+            }
+        };
+
+        const parseReferenceMonth = (value) => {
+            if (!value) {
+                return null;
+            }
+
+            const match = String(value).match(/^(\d{4})-(\d{1,2})/);
+            if (!match) {
+                return null;
+            }
+
+            const year = Number(match[1]);
+            const month = Number(match[2]);
+            if (!year || month < 1 || month > 12) {
+                return null;
+            }
+
+            return { year, month };
+        };
+
+        const updateRateQuantitiesByReferenceMonth = () => {
+            if (!referenceMonthInput) {
+                return;
+            }
+            const parsed = parseReferenceMonth(referenceMonthInput.value);
+            if (!parsed) {
+                return;
+            }
+
+            const businessDaysCount = countBusinessDays(parsed.year, parsed.month);
+            const businessDays = String(businessDaysCount);
+            const hourlyQuantity = (businessDaysCount * defaultHourlyHoursPerBusinessDay).toFixed(2);
             const itemBlocks = container.querySelectorAll('.item-row');
 
             itemBlocks.forEach((row) => {
@@ -102,7 +166,11 @@
                 const quantityField = row.querySelector('input[id$="_quantity"]');
                 if (typeField && quantityField && typeField.value === 'daily_rate') {
                     quantityField.value = businessDays;
+                } else if (typeField && quantityField && typeField.value === 'hourly_rate') {
+                    quantityField.value = hourlyQuantity;
                 }
+                applyQuantityFieldRules(row);
+                applyDefaultUnitPriceByType(row);
             });
         };
 
@@ -146,7 +214,7 @@
                 button.addEventListener('click', () => {
                     const row = button.closest('.item-row');
                     row?.remove();
-                    updateDailyRateQuantities();
+                    updateRateQuantitiesByReferenceMonth();
                     calculateInvoiceTotal();
                 });
             });
@@ -160,12 +228,15 @@
             row.innerHTML = `${prototype}<button class="btn btn-danger item-remove" type="button">Excluir item</button>`;
             container.appendChild(row);
             container.dataset.index = String(index + 1);
-            updateDailyRateQuantities();
+            applyQuantityFieldRules(row);
+            applyDefaultUnitPriceByType(row);
+            updateRateQuantitiesByReferenceMonth();
             bindRemoveButtons();
             calculateInvoiceTotal();
         });
 
-        referenceMonthInput?.addEventListener('change', updateDailyRateQuantities);
+        referenceMonthInput?.addEventListener('change', updateRateQuantitiesByReferenceMonth);
+        referenceMonthInput?.addEventListener('input', updateRateQuantitiesByReferenceMonth);
         issueDateInput?.addEventListener('change', updateDueDateFromIssueDate);
         container?.addEventListener('change', (event) => {
             const target = event.target;
@@ -174,7 +245,12 @@
                     alert('A invoice pode ter apenas um item Daily rate.');
                     target.value = 'one_off';
                 }
-                updateDailyRateQuantities();
+                const row = target.closest('.item-row');
+                if (row) {
+                    applyQuantityFieldRules(row);
+                    applyDefaultUnitPriceByType(row);
+                }
+                updateRateQuantitiesByReferenceMonth();
             }
             if (
                 (target instanceof HTMLInputElement && (target.id.endsWith('_quantity') || target.id.endsWith('_unitPrice')))
@@ -186,9 +262,13 @@
         currencyInput?.addEventListener('change', () => {
             totalCurrency.textContent = currencyInput.value || 'CAD';
         });
+        container?.querySelectorAll('.item-row').forEach((row) => {
+            applyQuantityFieldRules(row);
+            applyDefaultUnitPriceByType(row);
+        });
         bindRemoveButtons();
         updateDueDateFromIssueDate();
-        updateDailyRateQuantities();
+        updateRateQuantitiesByReferenceMonth();
         calculateInvoiceTotal();
     </script>
 {% endblock %}

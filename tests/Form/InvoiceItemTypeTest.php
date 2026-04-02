@@ -29,4 +29,24 @@ final class InvoiceItemTypeTest extends TypeTestCaseWithValidator
         self::assertNotSame('', $model->getUnitPrice());
         self::assertSame('19800.00', $model->getTotalAmount());
     }
+
+    public function testSubmitHourlyRateItemWithDecimalHours(): void
+    {
+        $formData = [
+            'billingType' => InvoiceItem::BILLING_HOURLY_RATE,
+            'description' => 'Development work',
+            'quantity' => '7.5',
+            'unitPrice' => '120.00',
+        ];
+
+        $model = new InvoiceItem();
+        $form = $this->factory->create(InvoiceItemType::class, $model);
+        $form->submit($formData);
+
+        self::assertTrue($form->isSynchronized());
+        self::assertSame(InvoiceItem::BILLING_HOURLY_RATE, $model->getBillingType());
+        self::assertSame('Development work', $model->getDescription());
+        self::assertSame('7.5', $model->getDisplayQuantity());
+        self::assertSame('900.00', $model->getTotalAmount());
+    }
 }

@@ -121,17 +121,19 @@
 <table class="items">
     <thead>
     <tr>
+        <th>Type</th>
         <th>Description</th>
         <th class="num">Quantity</th>
-        <th class="num">Daily Rate ({{ invoice.currency }})</th>
+        <th class="num">Rate ({{ invoice.currency }})</th>
         <th class="num">Amount ({{ invoice.currency }})</th>
     </tr>
     </thead>
     <tbody>
     {% for item in invoice.items %}
         <tr>
+            <td>{{ item.billingTypeLabel }}</td>
             <td>{{ item.description }}</td>
-            <td class="num">{{ item.billingType == 'daily_rate' ? item.quantity|replace({'.00': ''}) : item.quantity }}</td>
+            <td class="num">{{ item.displayQuantity }}</td>
             <td class="num">{{ item.unitPrice|number_format(2, '.', ',') }}</td>
             <td class="num">{{ item.totalAmount|number_format(2, '.', ',') }}</td>
         </tr>

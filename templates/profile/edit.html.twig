@@ -7,21 +7,56 @@
         <h1>Perfil</h1>
     </div>
 
-    <div class="card form-card">
-        <div class="section-title">Preferências de cobrança</div>
-        {{ form_start(form) }}
-            <div class="form-grid">
-                {{ form_row(form.jobDescription) }}
-            </div>
-            <div class="form-grid">
-                {{ form_row(form.defaultDailyRate) }}
-                {{ form_row(form.defaultDailyRateCurrency) }}
+    {{ form_start(form) }}
+        <div class="profile-stack">
+            <div class="card form-card profile-card">
+                <div class="section-title">Preferências de cobrança</div>
+                {{ form_errors(form) }}
+                <div class="form-grid profile-billing-grid">
+                    {{ form_row(form.jobDescription) }}
+                </div>
+                <div class="form-grid profile-billing-grid">
+                    {{ form_row(form.defaultRateValue) }}
+                    {{ form_row(form.defaultRateType) }}
+                </div>
+                <div class="form-grid profile-billing-grid" id="hourly-hours-wrapper">
+                    {{ form_row(form.defaultHourlyHoursPerBusinessDay) }}
+                </div>
+                <div class="form-grid profile-billing-grid">
+                    {{ form_row(form.defaultDailyRateCurrency) }}
+                </div>
             </div>
 
-            <div class="section-title">Segurança</div>
-            {{ form_row(form.newPassword) }}
+            <div class="card form-card profile-card">
+                <div class="section-title">Segurança</div>
+                <div class="profile-password-fields">
+                    {{ form_row(form.newPassword.first) }}
+                    {{ form_row(form.newPassword.second) }}
+                </div>
+            </div>
 
-            <button class="btn" type="submit">Salvar alterações</button>
-        {{ form_end(form) }}
-    </div>
+            <div class="card form-card profile-card profile-actions-card">
+                <button class="btn" type="submit">Salvar alterações</button>
+            </div>
+        </div>
+
+        {{ form_widget(form._token) }}
+    {{ form_end(form, { render_rest: false }) }}
+
+    <script>
+        const rateTypeField = document.getElementById('{{ form.defaultRateType.vars.id }}');
+        const hourlyHoursWrapper = document.getElementById('hourly-hours-wrapper');
+
+        const toggleHourlyHoursField = () => {
+            if (!rateTypeField || !hourlyHoursWrapper) {
+                return;
+            }
+
+            const isHourly = rateTypeField.value === 'hourly_rate';
+            hourlyHoursWrapper.style.display = isHourly ? '' : 'none';
+        };
+
+        rateTypeField?.addEventListener('change', toggleHourlyHoursField);
+        toggleHourlyHoursField();
+    </script>
 {% endblock %}

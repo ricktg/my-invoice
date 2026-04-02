@@ -42,6 +42,7 @@ class InvoiceType extends AbstractType
                     'readonly' => true,
                 ],
                 'help' => 'Calculado automaticamente: 10 dias após a emissão.',
+                'help_html' => true,
             ])
             ->add('issuerCompany', EntityType::class, [
                 'label' => 'Empresa emissora (sua PJ)',

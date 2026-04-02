@@ -30,6 +30,21 @@ final class ProfileController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $defaultRateType = (string) $form->get('defaultRateType')->getData();
+            $defaultRateValue = $form->get('defaultRateValue')->getData();
+            $defaultRateValue = $defaultRateValue !== null && $defaultRateValue !== '' ? (string) $defaultRateValue : null;
+
+            $user->setDefaultDailyRate(null);
+            $user->setDefaultHourlyRate(null);
+
+            if ($defaultRateValue !== null) {
+                if ($defaultRateType === ProfileType::RATE_TYPE_HOURLY) {
+                    $user->setDefaultHourlyRate($defaultRateValue);
+                } else {
+                    $user->setDefaultDailyRate($defaultRateValue);
+                }
+            }
+
             $newPassword = (string) $form->get('newPassword')->getData();
             if ($newPassword !== '') {
                 $user->setPassword($passwordHasher->hashPassword($user, $newPassword));

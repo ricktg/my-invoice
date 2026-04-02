@@ -41,6 +41,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'decimal', precision: 12, scale: 2, nullable: true)]
     private ?string $defaultDailyRate = null;
 
+    #[ORM\Column(type: 'decimal', precision: 12, scale: 2, nullable: true)]
+    private ?string $defaultHourlyRate = null;
+
+    #[ORM\Column(type: 'decimal', precision: 6, scale: 2, nullable: true)]
+    private ?string $defaultHourlyHoursPerBusinessDay = null;
+
     #[ORM\Column(length: 3, nullable: true)]
     private ?string $defaultDailyRateCurrency = null;
 
@@ -137,6 +143,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->defaultDailyRateCurrency = $defaultDailyRateCurrency !== null
             ? mb_strtoupper(trim($defaultDailyRateCurrency))
             : null;
+
+        return $this;
+    }
+
+    public function getDefaultHourlyRate(): ?string
+    {
+        return $this->defaultHourlyRate;
+    }
+
+    public function setDefaultHourlyRate(?string $defaultHourlyRate): self
+    {
+        $this->defaultHourlyRate = $defaultHourlyRate;
+
+        return $this;
+    }
+
+    public function getDefaultHourlyHoursPerBusinessDay(): ?string
+    {
+        return $this->defaultHourlyHoursPerBusinessDay;
+    }
+
+    public function setDefaultHourlyHoursPerBusinessDay(?string $defaultHourlyHoursPerBusinessDay): self
+    {
+        $this->defaultHourlyHoursPerBusinessDay = $defaultHourlyHoursPerBusinessDay;
 
         return $this;
     }

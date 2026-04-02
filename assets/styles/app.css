@@ -84,6 +84,49 @@ a {
     margin-bottom: 14px;
 }
 
+.profile-stack > .card {
+    margin-bottom: 18px;
+}
+
+.profile-card .form-row {
+    margin-bottom: 16px;
+}
+
+.profile-card .form-grid {
+    row-gap: 18px;
+}
+
+.profile-card .form-grid + .form-grid {
+    margin-top: 10px;
+}
+
+.profile-card .section-title + .form-grid {
+    margin-top: 6px;
+}
+
+.profile-card .profile-billing-grid + .profile-billing-grid {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #e6edf7;
+}
+
+.profile-password-fields > div + div {
+    margin-top: 12px;
+}
+
+.profile-card .btn {
+    margin-top: 8px;
+}
+
+.profile-actions-card {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.profile-actions-card .btn {
+    margin-top: 0;
+}
+
 .form-row {
     margin-bottom: 12px;
 }
