@@ -88,6 +88,12 @@ jobs:
           DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
         run: php -d xdebug.mode=coverage bin/phpunit --coverage-clover build/logs/clover.xml --coverage-html build/coverage
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: build/logs/clover.xml
+          fail_ci_if_error: false
+
       - name: Upload coverage artifacts
         uses: actions/upload-artifact@v4
         with:
