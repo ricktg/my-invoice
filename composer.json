@@ -82,6 +82,8 @@
             "assets:install %PUBLIC_DIR%": "symfony-cmd",
             "importmap:install": "symfony-cmd"
         },
+        "test": "php bin/phpunit",
+        "test:coverage": "php -d xdebug.mode=coverage bin/phpunit --coverage-text",
         "post-install-cmd": [
             "@auto-scripts"
         ],
