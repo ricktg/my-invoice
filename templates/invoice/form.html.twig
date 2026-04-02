@@ -68,6 +68,7 @@
     </div>
 
     <script>
+        (() => {
         const container = document.getElementById('items');
         const addButton = document.getElementById('add-item');
         const referenceMonthInput = document.getElementById('invoice_referenceMonth');
@@ -270,5 +271,6 @@
         updateDueDateFromIssueDate();
         updateRateQuantitiesByReferenceMonth();
         calculateInvoiceTotal();
+        })();
     </script>
 {% endblock %}
