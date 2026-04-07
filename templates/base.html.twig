@@ -21,7 +21,13 @@
 <body>
 <header class="topbar">
     <div class="topbar-inner">
-        <a class="brand" href="{{ path('app_home') }}">My Invoice</a>
+        <div class="brand-wrap">
+            <a class="brand" href="{{ path('app_home') }}">My Invoice</a>
+            <button class="version-chip" id="version-chip" type="button" title="Verificar atualizações" data-version-check-url="{{ path('app_system_version_check') }}">
+                <span id="version-chip-current">v{{ app_version|default('dev') }}</span>
+                <span class="version-update-badge" id="version-update-badge" hidden>NOVA</span>
+            </button>
+        </div>
         {% if app.user %}
             <nav class="nav">
                 <a href="{{ path('app_invoice_index') }}">Invoices</a>
@@ -42,5 +48,28 @@
     {% endfor %}
     {% block body %}{% endblock %}
 </main>
+<div class="version-modal-backdrop" id="version-modal-backdrop" hidden>
+    <div class="version-modal" role="dialog" aria-modal="true" aria-labelledby="version-modal-title">
+        <div class="version-modal-head">
+            <h3 id="version-modal-title">Atualização do sistema</h3>
+            <button class="version-modal-close" id="version-modal-close" type="button" aria-label="Fechar">×</button>
+        </div>
+        <div class="version-modal-body">
+            <p id="version-modal-summary">Verificando versões...</p>
+            <div id="version-modal-update-content" hidden>
+                <p><strong>Versão atual:</strong> <span id="version-current-value"></span></p>
+                <p><strong>Nova versão disponível:</strong> <span id="version-latest-value"></span></p>
+                <p><a id="version-release-link" href="#" target="_blank" rel="noopener">Ver detalhes da release</a></p>
+                <p><strong>Como atualizar:</strong></p>
+                <pre class="version-command" id="version-command-bash"></pre>
+                <pre class="version-command" id="version-command-ps"></pre>
+                <p class="muted">Se houver alterações locais não commitadas, adicione `--allow-dirty` ou `-AllowDirty`.</p>
+            </div>
+            <div id="version-modal-no-update-content" hidden>
+                <p>Você já está na versão mais recente.</p>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

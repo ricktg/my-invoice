@@ -25,7 +25,7 @@ a {
     margin: 0 auto;
     padding: 14px 20px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     gap: 16px;
 }
@@ -35,9 +35,116 @@ a {
     font-weight: 700;
 }
 
+.brand-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.version-chip {
+    border: 1px solid #334155;
+    background: #111827;
+    color: #cbd5e1;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 0;
+}
+
+.version-chip:hover {
+    background: #1f2937;
+}
+
+.version-chip:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+.version-chip-has-update {
+    border-color: #22c55e;
+    color: #dcfce7;
+}
+
+.version-update-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    background: #22c55e;
+    color: #052e16;
+}
+
+.version-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 16px;
+}
+
+.version-modal-backdrop[hidden] {
+    display: none !important;
+}
+
+.version-modal {
+    width: 100%;
+    max-width: 620px;
+    background: #fff;
+    border: 1px solid #dbe5f2;
+    border-radius: 14px;
+    box-shadow: 0 24px 70px rgba(2, 6, 23, 0.35);
+}
+
+.version-modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid #e7eef8;
+}
+
+.version-modal-head h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.version-modal-close {
+    border: 0;
+    background: transparent;
+    font-size: 26px;
+    line-height: 1;
+    color: #334155;
+    cursor: pointer;
+}
+
+.version-modal-body {
+    padding: 16px;
+}
+
+.version-command {
+    margin: 8px 0;
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    overflow-x: auto;
+    font-size: 13px;
+}
+
 .nav {
     display: flex;
     gap: 16px;
+    margin-left: auto;
 }
 
 .nav a {

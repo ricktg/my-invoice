@@ -2,6 +2,8 @@ twig:
     file_name_pattern: '*.twig'
     form_themes:
         - 'form/custom_theme.html.twig'
+    globals:
+        app_version: '%app.version%'
 
 when@test:
     twig:

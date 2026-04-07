@@ -48,6 +48,29 @@ jobs:
             exit 1
           fi
 
+      - name: Bump APP_VERSION in .env
+        run: |
+          VERSION="${{ inputs.version }}"
+          VERSION_NO_PREFIX="${VERSION#v}"
+          if grep -q '^APP_VERSION=' .env; then
+            sed -i "s/^APP_VERSION=.*/APP_VERSION=${VERSION_NO_PREFIX}/" .env
+          else
+            echo "APP_VERSION=${VERSION_NO_PREFIX}" >> .env
+          fi
+
+      - name: Commit and push APP_VERSION update
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- .env; then
+            echo "Nenhuma alteração em .env para commitar."
+          else
+            git add .env
+            git commit -m "chore: bump APP_VERSION to ${{ inputs.version }}"
+            git push origin "HEAD:${BRANCH}"
+          fi
+
       - name: Create and push git tag
         run: |
           VERSION="${{ inputs.version }}"

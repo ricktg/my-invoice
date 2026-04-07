@@ -7,6 +7,10 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.version_default: 'dev'
+    app.github_repo_default: 'ricktg/my-invoice'
+    app.version: '%env(default:app.version_default:APP_VERSION)%'
+    app.github_repo: '%env(default:app.github_repo_default:APP_GITHUB_REPO)%'
 
 services:
     # default configuration for services in *this* file
@@ -18,6 +22,11 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/'
+
+    App\Service\VersionCheckService:
+        bind:
+            $appVersion: '%app.version%'
+            $githubRepo: '%app.github_repo%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
