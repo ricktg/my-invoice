@@ -27,7 +27,7 @@ class InvoiceRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('i')
             ->andWhere('i.owner = :owner')
             ->setParameter('owner', $owner)
-            ->orderBy('i.issueDate', 'DESC')
+            ->orderBy('i.createdAt', 'DESC')
             ->addOrderBy('i.id', 'DESC')
             ->getQuery()
             ->getResult();

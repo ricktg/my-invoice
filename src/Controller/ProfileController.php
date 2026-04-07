@@ -36,10 +36,13 @@ final class ProfileController extends AbstractController
 
             $user->setDefaultDailyRate(null);
             $user->setDefaultHourlyRate(null);
+            $user->setDefaultAnnualFixedRate(null);
 
             if ($defaultRateValue !== null) {
                 if ($defaultRateType === ProfileType::RATE_TYPE_HOURLY) {
                     $user->setDefaultHourlyRate($defaultRateValue);
+                } elseif ($defaultRateType === ProfileType::RATE_TYPE_ANNUAL_FIXED) {
+                    $user->setDefaultAnnualFixedRate($defaultRateValue);
                 } else {
                     $user->setDefaultDailyRate($defaultRateValue);
                 }

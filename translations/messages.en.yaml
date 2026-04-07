@@ -1,0 +1,29 @@
+invoice:
+  label:
+    number: 'Invoice Number'
+    date: 'Invoice Date'
+    service_period: 'Service Period'
+    email_status: 'Email Status'
+    due_date: 'Due date'
+    notes: 'Notes'
+  status:
+    sent: 'Sent'
+    pending: 'Pending'
+  section:
+    from: 'From'
+    bill_to: 'Bill To'
+    services: 'Services Rendered'
+    total_due: 'Total Due'
+    payment_terms: 'Payment Terms'
+  table:
+    type: 'Type'
+    description: 'Description'
+    quantity: 'Quantity'
+    rate: 'Rate'
+    amount: 'Amount'
+  billing_type:
+    daily_rate: 'Daily rate'
+    hourly_rate: 'Hourly rate'
+    one_off: 'One-off / reimbursement'
+  attn_finance: 'Attn: Finance / Accounts Payable'
+  payment_terms_10_days: 'Payment due within 10 days of invoice submission.'

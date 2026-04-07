@@ -49,6 +49,7 @@ final class InvoiceTest extends TestCase
         self::assertSame($issuer, $invoice->getIssuerCompany());
         self::assertSame($recipient, $invoice->getRecipientCompany());
         self::assertSame('USD', $invoice->getCurrency());
+        self::assertSame('en', $invoice->getLanguage());
         self::assertSame('2026-03', $invoice->getReferenceMonth());
         self::assertSame('Trabalho mensal', $invoice->getNotes());
         self::assertSame($createdAt, $invoice->getCreatedAt());
@@ -56,6 +57,14 @@ final class InvoiceTest extends TestCase
         self::assertCount(2, $invoice->getItems());
         self::assertSame($invoice, $item1->getInvoice());
         self::assertSame($invoice, $item2->getInvoice());
+    }
+
+    public function testLanguageCanBeChanged(): void
+    {
+        $invoice = (new Invoice())
+            ->setLanguage('pt-BR');
+
+        self::assertSame('pt-BR', $invoice->getLanguage());
     }
 
     public function testRemoveItemDetachesRelation(): void

@@ -44,6 +44,9 @@ class Invoice
     #[ORM\Column(length: 3)]
     private string $currency = 'CAD';
 
+    #[ORM\Column(length: 5)]
+    private string $language = 'en';
+
     #[ORM\Column(length: 7)]
     private string $referenceMonth = '';
 
@@ -161,6 +164,18 @@ class Invoice
     public function setCurrency(string $currency): self
     {
         $this->currency = mb_strtoupper(trim($currency));
+
+        return $this;
+    }
+
+    public function getLanguage(): string
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(string $language): self
+    {
+        $this->language = trim($language);
 
         return $this;
     }

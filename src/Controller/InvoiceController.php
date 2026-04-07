@@ -66,26 +66,39 @@ final class InvoiceController extends AbstractController
         if ($user->getDefaultDailyRateCurrency() !== null) {
             $invoice->setCurrency($user->getDefaultDailyRateCurrency());
         }
+        if ($user->getDefaultInvoiceLanguage() !== null) {
+            $invoice->setLanguage($user->getDefaultInvoiceLanguage());
+        }
         $invoice->setDueDate($invoice->getIssueDate()->modify('+10 days'));
         $defaultDescription = $user->getJobDescription() !== null && $user->getJobDescription() !== ''
             ? $user->getJobDescription()
             : 'Service fee';
         $defaultDailyRate = $user->getDefaultDailyRate() ?? '0.00';
         $defaultHourlyRate = $user->getDefaultHourlyRate() ?? '0.00';
+        $defaultAnnualFixedRate = $user->getDefaultAnnualFixedRate() ?? '0.00';
+        $defaultAnnualFixedMonthlyRate = number_format((float) $defaultAnnualFixedRate / 12, 2, '.', '');
         $defaultHourlyHoursPerBusinessDay = (float) ($user->getDefaultHourlyHoursPerBusinessDay() ?? '8');
         if ($defaultHourlyHoursPerBusinessDay <= 0) {
             $defaultHourlyHoursPerBusinessDay = 8.0;
         }
         $defaultBillingType = $user->getDefaultDailyRate() !== null
             ? InvoiceItem::BILLING_DAILY_RATE
-            : ($user->getDefaultHourlyRate() !== null ? InvoiceItem::BILLING_HOURLY_RATE : InvoiceItem::BILLING_DAILY_RATE);
+            : ($user->getDefaultHourlyRate() !== null
+                ? InvoiceItem::BILLING_HOURLY_RATE
+                : ($user->getDefaultAnnualFixedRate() !== null ? InvoiceItem::BILLING_ONE_OFF : InvoiceItem::BILLING_DAILY_RATE));
         $businessDays = $businessDayCalculator->countWeekdaysInMonth($invoice->getReferenceMonth());
         $hourlyMonthQuantity = number_format($businessDays * $defaultHourlyHoursPerBusinessDay, 2, '.', '');
+        $defaultQuantity = $defaultBillingType === InvoiceItem::BILLING_DAILY_RATE
+            ? (string) $businessDays
+            : ($defaultBillingType === InvoiceItem::BILLING_HOURLY_RATE ? $hourlyMonthQuantity : '1');
+        $defaultUnitPrice = $defaultBillingType === InvoiceItem::BILLING_DAILY_RATE
+            ? $defaultDailyRate
+            : ($defaultBillingType === InvoiceItem::BILLING_HOURLY_RATE ? $defaultHourlyRate : $defaultAnnualFixedMonthlyRate);
         $invoice->addItem((new InvoiceItem())
             ->setDescription($defaultDescription)
             ->setBillingType($defaultBillingType)
-            ->setQuantity($defaultBillingType === InvoiceItem::BILLING_DAILY_RATE ? (string) $businessDays : $hourlyMonthQuantity)
-            ->setUnitPrice($defaultBillingType === InvoiceItem::BILLING_DAILY_RATE ? $defaultDailyRate : $defaultHourlyRate));
+            ->setQuantity($defaultQuantity)
+            ->setUnitPrice($defaultUnitPrice));
 
         $form = $this->createForm(InvoiceType::class, $invoice, [
             'owner' => $user,
@@ -113,6 +126,7 @@ final class InvoiceController extends AbstractController
             'invoice' => null,
             'default_daily_rate' => $defaultDailyRate,
             'default_hourly_rate' => $defaultHourlyRate,
+            'default_annual_fixed_rate' => $defaultAnnualFixedMonthlyRate,
             'default_hourly_hours_per_business_day' => number_format($defaultHourlyHoursPerBusinessDay, 2, '.', ''),
             'user_local_currency' => $user->getLocalCurrency(),
         ]);
@@ -155,6 +169,7 @@ final class InvoiceController extends AbstractController
             'invoice' => $invoice,
             'default_daily_rate' => $user->getDefaultDailyRate() ?? '0.00',
             'default_hourly_rate' => $user->getDefaultHourlyRate() ?? '0.00',
+            'default_annual_fixed_rate' => number_format((float) ($user->getDefaultAnnualFixedRate() ?? '0.00') / 12, 2, '.', ''),
             'default_hourly_hours_per_business_day' => $user->getDefaultHourlyHoursPerBusinessDay() ?? '8.00',
             'user_local_currency' => $user->getLocalCurrency(),
         ]);

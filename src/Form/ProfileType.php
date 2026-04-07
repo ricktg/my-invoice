@@ -22,6 +22,7 @@ class ProfileType extends AbstractType
 {
     public const RATE_TYPE_DAILY = 'daily_rate';
     public const RATE_TYPE_HOURLY = 'hourly_rate';
+    public const RATE_TYPE_ANNUAL_FIXED = 'annual_fixed';
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -45,6 +46,7 @@ class ProfileType extends AbstractType
                 'choices' => [
                     'Diário (daily rate)' => self::RATE_TYPE_DAILY,
                     'Por hora (hourly rate)' => self::RATE_TYPE_HOURLY,
+                    'Valor fixo anual' => self::RATE_TYPE_ANNUAL_FIXED,
                 ],
             ])
             ->add('defaultHourlyHoursPerBusinessDay', NumberType::class, [
@@ -80,6 +82,15 @@ class ProfileType extends AbstractType
                     'CAD' => 'CAD',
                     'EUR' => 'EUR',
                     'GBP' => 'GBP',
+                ],
+            ])
+            ->add('defaultInvoiceLanguage', ChoiceType::class, [
+                'label' => 'Idioma padrão da invoice',
+                'required' => false,
+                'placeholder' => 'Selecione',
+                'choices' => [
+                    'English' => 'en',
+                    'Português (Brasil)' => 'pt-BR',
                 ],
             ])
             ->add('newPassword', RepeatedType::class, [
@@ -122,6 +133,13 @@ class ProfileType extends AbstractType
             if ($user->getDefaultHourlyRate() !== null) {
                 $event->getForm()->get('defaultRateType')->setData(self::RATE_TYPE_HOURLY);
                 $event->getForm()->get('defaultRateValue')->setData($user->getDefaultHourlyRate());
+
+                return;
+            }
+
+            if ($user->getDefaultAnnualFixedRate() !== null) {
+                $event->getForm()->get('defaultRateType')->setData(self::RATE_TYPE_ANNUAL_FIXED);
+                $event->getForm()->get('defaultRateValue')->setData($user->getDefaultAnnualFixedRate());
 
                 return;
             }

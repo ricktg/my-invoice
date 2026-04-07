@@ -47,6 +47,23 @@ final class InvoiceControllerTest extends DatabaseWebTestCase
         self::assertSame('USD', $currencyValue);
     }
 
+    public function testNewInvoicePrefillsLanguageFromProfileDefault(): void
+    {
+        $client = static::createClient();
+        $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
+
+        [$user] = $this->createUserAndCompanies();
+        $user->setDefaultInvoiceLanguage('pt-BR');
+        $this->entityManager->flush();
+
+        $client->loginUser($user);
+        $crawler = $client->request('GET', '/invoices/new');
+        self::assertResponseIsSuccessful();
+
+        $languageValue = $crawler->filter('select[name="invoice[language]"] option[selected="selected"]')->attr('value');
+        self::assertSame('pt-BR', $languageValue);
+    }
+
     public function testNewInvoiceSubmitKeepsManuallyTypedHourlyQuantity(): void
     {
         $client = static::createClient();
@@ -198,6 +215,33 @@ final class InvoiceControllerTest extends DatabaseWebTestCase
         $updated = $this->entityManager->getRepository(Invoice::class)->find($invoice->getId());
         self::assertInstanceOf(Invoice::class, $updated);
         self::assertEquals(11.0, (float) $updated->getItems()->first()->getQuantity());
+    }
+
+    public function testNewInvoicePrefillsAnnualFixedAsMonthlyOneOffItem(): void
+    {
+        $client = static::createClient();
+        $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
+
+        [$user, $issuer, $recipient] = $this->createUserAndCompanies();
+        $user
+            ->setDefaultHourlyRate(null)
+            ->setDefaultHourlyHoursPerBusinessDay(null)
+            ->setDefaultDailyRate(null)
+            ->setDefaultAnnualFixedRate('24000.00');
+        $this->entityManager->flush();
+
+        $client->loginUser($user);
+        $crawler = $client->request('GET', '/invoices/new');
+
+        self::assertResponseIsSuccessful();
+
+        $quantityValue = $crawler->filter('input[name="invoice[items][0][quantity]"]')->attr('value');
+        $unitPriceValue = $crawler->filter('input[name="invoice[items][0][unitPrice]"]')->attr('value');
+        $billingTypeValue = $crawler->filter('select[name="invoice[items][0][billingType]"] option[selected="selected"]')->attr('value');
+
+        self::assertSame(InvoiceItem::BILLING_ONE_OFF, $billingTypeValue);
+        self::assertSame('1.00', $quantityValue);
+        self::assertSame('2000.00', $unitPriceValue);
     }
 
     /**

@@ -8,17 +8,21 @@
         <a class="btn btn-secondary" href="{{ path('app_company_index') }}">Voltar</a>
     </div>
 
-    <div class="card form-card">
+    <div class="card form-card company-form-card">
         {{ form_start(form) }}
-            <div class="form-grid">
+            <div class="form-grid company-form-grid">
                 {{ form_row(form.name) }}
                 {{ form_row(form.type) }}
                 {{ form_row(form.email) }}
                 {{ form_row(form.taxId) }}
                 {{ form_row(form.countryCode) }}
             </div>
-            {{ form_row(form.address) }}
-            <button class="btn" type="submit">Salvar</button>
+            <div class="company-form-address">
+                {{ form_row(form.address) }}
+            </div>
+            <div class="company-form-actions">
+                <button class="btn" type="submit">Salvar</button>
+            </div>
         {{ form_end(form) }}
     </div>
 {% endblock %}

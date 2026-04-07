@@ -18,6 +18,7 @@ final class ProfileTypeTest extends TypeTestCaseWithValidator
             'defaultHourlyHoursPerBusinessDay' => '8.00',
             'defaultDailyRateCurrency' => 'USD',
             'localCurrency' => 'BRL',
+            'defaultInvoiceLanguage' => 'pt-BR',
             'newPassword' => [
                 'first' => '',
                 'second' => '',
@@ -35,6 +36,7 @@ final class ProfileTypeTest extends TypeTestCaseWithValidator
         self::assertSame('hourly_rate', $form->get('defaultRateType')->getData());
         self::assertSame('8', $model->getDefaultHourlyHoursPerBusinessDay());
         self::assertSame('BRL', $model->getLocalCurrency());
+        self::assertSame('pt-BR', $model->getDefaultInvoiceLanguage());
         self::assertSame('', (string) $form->get('newPassword')->getData());
     }
 
@@ -62,6 +64,7 @@ final class ProfileTypeTest extends TypeTestCaseWithValidator
             'defaultHourlyHoursPerBusinessDay' => '',
             'defaultDailyRateCurrency' => 'USD',
             'localCurrency' => 'BRL',
+            'defaultInvoiceLanguage' => 'en',
             'newPassword' => [
                 'first' => '',
                 'second' => '',
@@ -70,5 +73,16 @@ final class ProfileTypeTest extends TypeTestCaseWithValidator
 
         self::assertFalse($form->isValid());
         self::assertCount(1, $form->get('defaultHourlyHoursPerBusinessDay')->getErrors(true));
+    }
+
+    public function testPreSetDataUsesAnnualFixedDefaultWhenAvailable(): void
+    {
+        $model = (new User())
+            ->setDefaultAnnualFixedRate('18000.00');
+
+        $form = $this->factory->create(ProfileType::class, $model);
+
+        self::assertSame('annual_fixed', $form->get('defaultRateType')->getData());
+        self::assertSame('18000.00', (string) $form->get('defaultRateValue')->getData());
     }
 }

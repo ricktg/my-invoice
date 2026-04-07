@@ -41,6 +41,7 @@ final class ProfileControllerTest extends DatabaseWebTestCase
             'profile[defaultRateType]' => 'hourly_rate',
             'profile[defaultHourlyHoursPerBusinessDay]' => '8',
             'profile[defaultDailyRateCurrency]' => 'USD',
+            'profile[defaultInvoiceLanguage]' => 'pt-BR',
             'profile[newPassword][first]' => 'Nova@123',
             'profile[newPassword][second]' => 'Nova@123',
         ]);
@@ -56,6 +57,7 @@ final class ProfileControllerTest extends DatabaseWebTestCase
         self::assertNull($updated->getDefaultDailyRate());
         self::assertSame('8', $updated->getDefaultHourlyHoursPerBusinessDay());
         self::assertSame('USD', $updated->getDefaultDailyRateCurrency());
+        self::assertSame('pt-BR', $updated->getDefaultInvoiceLanguage());
         self::assertNotSame('old-hash', $updated->getPassword());
     }
 
@@ -84,6 +86,7 @@ final class ProfileControllerTest extends DatabaseWebTestCase
             'profile[defaultRateType]' => 'daily_rate',
             'profile[defaultHourlyHoursPerBusinessDay]' => '',
             'profile[defaultDailyRateCurrency]' => 'CAD',
+            'profile[defaultInvoiceLanguage]' => 'en',
             'profile[newPassword][first]' => '',
             'profile[newPassword][second]' => '',
         ]);
@@ -95,6 +98,49 @@ final class ProfileControllerTest extends DatabaseWebTestCase
         $updated = $this->entityManager->getRepository(User::class)->find($user->getId());
         self::assertInstanceOf(User::class, $updated);
         self::assertSame('950', $updated->getDefaultDailyRate());
+        self::assertNull($updated->getDefaultHourlyRate());
+        self::assertSame('en', $updated->getDefaultInvoiceLanguage());
+    }
+
+    public function testProfileUpdateSetsAnnualFixedDefaultAndClearsOtherRates(): void
+    {
+        $client = static::createClient();
+        $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
+
+        $user = (new User())
+            ->setEmail('annual@example.com')
+            ->setPassword('old-hash')
+            ->setRoles(['ROLE_USER'])
+            ->setDefaultDailyRate('900.00')
+            ->setDefaultHourlyRate('110.00')
+            ->setDefaultHourlyHoursPerBusinessDay('8.0')
+            ->setDefaultDailyRateCurrency('USD');
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        $client->loginUser($user);
+        $crawler = $client->request('GET', '/profile');
+        self::assertResponseIsSuccessful();
+
+        $form = $crawler->selectButton('Salvar alterações')->form([
+            'profile[jobDescription]' => 'Annual Services',
+            'profile[defaultRateValue]' => '24000',
+            'profile[defaultRateType]' => 'annual_fixed',
+            'profile[defaultHourlyHoursPerBusinessDay]' => '',
+            'profile[defaultDailyRateCurrency]' => 'USD',
+            'profile[defaultInvoiceLanguage]' => 'en',
+            'profile[newPassword][first]' => '',
+            'profile[newPassword][second]' => '',
+        ]);
+        $client->submit($form);
+
+        self::assertResponseRedirects('/profile');
+        $this->entityManager->clear();
+
+        $updated = $this->entityManager->getRepository(User::class)->find($user->getId());
+        self::assertInstanceOf(User::class, $updated);
+        self::assertSame('24000', $updated->getDefaultAnnualFixedRate());
+        self::assertNull($updated->getDefaultDailyRate());
         self::assertNull($updated->getDefaultHourlyRate());
     }
 }

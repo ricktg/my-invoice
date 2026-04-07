@@ -1,0 +1,29 @@
+invoice:
+  label:
+    number: 'Número da invoice'
+    date: 'Data da invoice'
+    service_period: 'Período de serviço'
+    email_status: 'Status de envio por e-mail'
+    due_date: 'Data de vencimento'
+    notes: 'Observações'
+  status:
+    sent: 'Enviada'
+    pending: 'Pendente'
+  section:
+    from: 'De'
+    bill_to: 'Cobrar de'
+    services: 'Serviços prestados'
+    total_due: 'Total a pagar'
+    payment_terms: 'Condições de pagamento'
+  table:
+    type: 'Tipo'
+    description: 'Descrição'
+    quantity: 'Quantidade'
+    rate: 'Valor unitário'
+    amount: 'Valor'
+  billing_type:
+    daily_rate: 'Daily rate'
+    hourly_rate: 'Hourly rate'
+    one_off: 'Cobrança única / reembolso'
+  attn_finance: 'A/C: Financeiro / Contas a pagar'
+  payment_terms_10_days: 'Pagamento devido em até 10 dias após o envio da invoice.'

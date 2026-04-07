@@ -76,6 +76,13 @@ class InvoiceType extends AbstractType
                     'GBP' => 'GBP',
                 ],
             ])
+            ->add('language', ChoiceType::class, [
+                'label' => 'Idioma da invoice',
+                'choices' => [
+                    'English' => 'en',
+                    'Português (Brasil)' => 'pt-BR',
+                ],
+            ])
             ->add('referenceMonth', TextType::class, [
                 'label' => 'Mês de referência',
                 'attr' => [

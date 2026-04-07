@@ -342,6 +342,28 @@ label {
     border-top: 4px solid #0b4bc0;
 }
 
+.company-form-card .form-row {
+    margin-bottom: 16px;
+}
+
+.company-form-card {
+    max-width: 920px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.company-form-grid {
+    row-gap: 18px;
+}
+
+.company-form-address {
+    margin-top: 8px;
+}
+
+.company-form-actions {
+    margin-top: 14px;
+}
+
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -408,6 +430,15 @@ td {
     line-height: 1.25;
 }
 
+.help-text,
+.form-help {
+    display: block;
+    margin-top: 5px;
+    font-size: 11px;
+    line-height: 1.35;
+    color: #94a3b8;
+}
+
 .grid-2 {
     display: grid;
     gap: 14px;
@@ -452,6 +483,18 @@ td {
 
 .invoice-items-section {
     margin-top: 20px;
+}
+
+.invoice-items-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.invoice-items-head .section-title {
+    margin: 0;
 }
 
 .invoice-notes-field {
@@ -801,6 +844,11 @@ td {
     }
 
     .invoice-form-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .invoice-items-head {
         flex-direction: column;
         align-items: stretch;
     }

@@ -7,13 +7,14 @@
     const modalSummary = document.getElementById('version-modal-summary');
     const modalUpdateContent = document.getElementById('version-modal-update-content');
     const modalNoUpdateContent = document.getElementById('version-modal-no-update-content');
+    const versionNoUpdateMessage = document.getElementById('version-no-update-message');
     const versionCurrentValue = document.getElementById('version-current-value');
     const versionLatestValue = document.getElementById('version-latest-value');
     const versionReleaseLink = document.getElementById('version-release-link');
     const versionCommandBash = document.getElementById('version-command-bash');
     const versionCommandPs = document.getElementById('version-command-ps');
 
-    if (!chip || !current || !updateBadge || !modalBackdrop || !modalClose || !modalSummary || !modalUpdateContent || !modalNoUpdateContent || !versionCurrentValue || !versionLatestValue || !versionReleaseLink || !versionCommandBash || !versionCommandPs) {
+    if (!chip || !current || !updateBadge || !modalBackdrop || !modalClose || !modalSummary || !modalUpdateContent || !modalNoUpdateContent || !versionNoUpdateMessage || !versionCurrentValue || !versionLatestValue || !versionReleaseLink || !versionCommandBash || !versionCommandPs) {
         return;
     }
 
@@ -96,9 +97,10 @@
             return;
         }
 
-        modalSummary.textContent = data.error
-            ? `Sem atualização (verificação parcial): ${data.error}`
-            : `Você está na versão mais recente (${data.latest_version || data.current_version}).`;
+        modalSummary.textContent = data.error ? 'Sem atualização (verificação parcial).' : 'Sistema atualizado.';
+        versionNoUpdateMessage.textContent = data.error
+            ? `Você já está na versão mais recente, mas a verificação retornou: ${data.error}`
+            : `Você já está na versão mais recente (${formatVersionLabel(data.latest_version || data.current_version)}).`;
         modalUpdateContent.hidden = true;
         modalNoUpdateContent.hidden = false;
     };

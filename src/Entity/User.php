@@ -44,6 +44,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'decimal', precision: 12, scale: 2, nullable: true)]
     private ?string $defaultHourlyRate = null;
 
+    #[ORM\Column(type: 'decimal', precision: 12, scale: 2, nullable: true)]
+    private ?string $defaultAnnualFixedRate = null;
+
     #[ORM\Column(type: 'decimal', precision: 6, scale: 2, nullable: true)]
     private ?string $defaultHourlyHoursPerBusinessDay = null;
 
@@ -52,6 +55,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 3, nullable: true)]
     private ?string $localCurrency = null;
+
+    #[ORM\Column(length: 5, nullable: true)]
+    private ?string $defaultInvoiceLanguage = null;
 
     public function getId(): ?int
     {
@@ -162,6 +168,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getDefaultAnnualFixedRate(): ?string
+    {
+        return $this->defaultAnnualFixedRate;
+    }
+
+    public function setDefaultAnnualFixedRate(?string $defaultAnnualFixedRate): self
+    {
+        $this->defaultAnnualFixedRate = $defaultAnnualFixedRate;
+
+        return $this;
+    }
+
     public function getDefaultHourlyHoursPerBusinessDay(): ?string
     {
         return $this->defaultHourlyHoursPerBusinessDay;
@@ -183,6 +201,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->localCurrency = $localCurrency !== null && $localCurrency !== ''
             ? mb_strtoupper(trim($localCurrency))
+            : null;
+
+        return $this;
+    }
+
+    public function getDefaultInvoiceLanguage(): ?string
+    {
+        return $this->defaultInvoiceLanguage;
+    }
+
+    public function setDefaultInvoiceLanguage(?string $defaultInvoiceLanguage): self
+    {
+        $this->defaultInvoiceLanguage = $defaultInvoiceLanguage !== null && $defaultInvoiceLanguage !== ''
+            ? trim($defaultInvoiceLanguage)
             : null;
 
         return $this;

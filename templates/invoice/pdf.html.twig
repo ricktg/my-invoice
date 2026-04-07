@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+{% set invoice_locale = invoice.language|default('en') == 'pt-BR' ? 'pt_BR' : 'en' %}
+<html lang="{{ invoice_locale == 'pt_BR' ? 'pt-BR' : 'en' }}">
 <head>
     <meta charset="UTF-8">
     <title>Invoice {{ invoice.number }}</title>
@@ -79,16 +80,16 @@
 {% set periodEnd = (invoice.referenceMonth ~ '-01')|date_modify('+1 month -1 day')|date('F j, Y') %}
 
 <h1>INVOICE</h1>
-<p><strong>Invoice Number:</strong> {{ invoice.number }}</p>
-<p><strong>Invoice Date:</strong> {{ invoice.issueDate|date('F j, Y') }}</p>
-<p><strong>Service Period:</strong> {{ periodStart }} - {{ periodEnd }}</p>
+<p><strong>{{ 'invoice.label.number'|trans({}, 'messages', invoice_locale) }}:</strong> {{ invoice.number }}</p>
+<p><strong>{{ 'invoice.label.date'|trans({}, 'messages', invoice_locale) }}:</strong> {{ invoice.issueDate|date('F j, Y') }}</p>
+<p><strong>{{ 'invoice.label.service_period'|trans({}, 'messages', invoice_locale) }}:</strong> {{ periodStart }} - {{ periodEnd }}</p>
 
 <div class="muted-line"></div>
 
 <table class="parties">
     <tr>
         <td>
-            <h2>From</h2>
+            <h2>{{ 'invoice.section.from'|trans({}, 'messages', invoice_locale) }}</h2>
             <p><strong>{{ invoice.issuerCompany.name }}</strong></p>
             {% if invoice.issuerCompany.address %}
                 <p>{{ invoice.issuerCompany.address|nl2br }}</p>
@@ -101,9 +102,9 @@
             {% endif %}
         </td>
         <td>
-            <h2>Bill To</h2>
+            <h2>{{ 'invoice.section.bill_to'|trans({}, 'messages', invoice_locale) }}</h2>
             <p><strong>{{ invoice.recipientCompany.name }}</strong></p>
-            <p>Attn: Finance / Accounts Payable</p>
+            <p>{{ 'invoice.attn_finance'|trans({}, 'messages', invoice_locale) }}</p>
             {% if invoice.recipientCompany.address %}
                 <p>{{ invoice.recipientCompany.address|nl2br }}</p>
             {% endif %}
@@ -117,21 +118,21 @@
     </tr>
 </table>
 
-<h2>Services Rendered</h2>
+<h2>{{ 'invoice.section.services'|trans({}, 'messages', invoice_locale) }}</h2>
 <table class="items">
     <thead>
     <tr>
-        <th>Type</th>
-        <th>Description</th>
-        <th class="num">Quantity</th>
-        <th class="num">Rate ({{ invoice.currency }})</th>
-        <th class="num">Amount ({{ invoice.currency }})</th>
+        <th>{{ 'invoice.table.type'|trans({}, 'messages', invoice_locale) }}</th>
+        <th>{{ 'invoice.table.description'|trans({}, 'messages', invoice_locale) }}</th>
+        <th class="num">{{ 'invoice.table.quantity'|trans({}, 'messages', invoice_locale) }}</th>
+        <th class="num">{{ 'invoice.table.rate'|trans({}, 'messages', invoice_locale) }} ({{ invoice.currency }})</th>
+        <th class="num">{{ 'invoice.table.amount'|trans({}, 'messages', invoice_locale) }} ({{ invoice.currency }})</th>
     </tr>
     </thead>
     <tbody>
     {% for item in invoice.items %}
         <tr>
-            <td>{{ item.billingTypeLabel }}</td>
+            <td>{{ ('invoice.billing_type.' ~ item.billingType)|trans({}, 'messages', invoice_locale) }}</td>
             <td>{{ item.description }}</td>
             <td class="num">{{ item.displayQuantity }}</td>
             <td class="num">{{ item.unitPrice|number_format(2, '.', ',') }}</td>
@@ -142,19 +143,19 @@
 </table>
 
 <div class="total">
-    <h2>Total Due</h2>
+    <h2>{{ 'invoice.section.total_due'|trans({}, 'messages', invoice_locale) }}</h2>
     <p class="amount">{{ invoice.currency }} {{ invoice.totalAmount|number_format(2, '.', ',') }}</p>
 </div>
 
 <div class="terms">
-    <p><strong>Payment Terms</strong></p>
-    <p>Payment due within <strong>10 days</strong> of invoice submission.</p>
-    <p>Due date: {{ invoice.dueDate ? invoice.dueDate|date('F j, Y') : '-' }}</p>
+    <p><strong>{{ 'invoice.section.payment_terms'|trans({}, 'messages', invoice_locale) }}</strong></p>
+    <p>{{ 'invoice.payment_terms_10_days'|trans({}, 'messages', invoice_locale) }}</p>
+    <p>{{ 'invoice.label.due_date'|trans({}, 'messages', invoice_locale) }}: {{ invoice.dueDate ? invoice.dueDate|date('F j, Y') : '-' }}</p>
 </div>
 
 {% if invoice.notes %}
     <div class="terms">
-        <p><strong>Notes</strong></p>
+        <p><strong>{{ 'invoice.label.notes'|trans({}, 'messages', invoice_locale) }}</strong></p>
         <p>{{ invoice.notes|nl2br }}</p>
     </div>
 {% endif %}

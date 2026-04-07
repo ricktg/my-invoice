@@ -41,6 +41,7 @@
                 {{ form_row(form.issuerCompany) }}
                 {{ form_row(form.recipientCompany) }}
                 {{ form_row(form.currency) }}
+                {{ form_row(form.language) }}
                 <div>
                     <label for="{{ form.referenceMonth.vars.id }}">Mês de referência</label>
                     <input
@@ -58,7 +59,10 @@
             </div>
 
             <section class="invoice-items-section">
-                <div class="section-title">Itens de cobrança</div>
+                <div class="invoice-items-head">
+                    <div class="section-title">Itens de cobrança</div>
+                    <button class="btn btn-secondary" type="button" id="add-item">Adicionar item</button>
+                </div>
                 <div id="items" data-index="{{ form.items|length }}" data-prototype="{{ _self.render_invoice_item_fields(form.items.vars.prototype)|e('html_attr') }}">
                     {% for itemForm in form.items %}
                         <div class="item-row">
@@ -87,7 +91,6 @@
                     {% endif %}
                 </div>
                 <div class="invoice-actions">
-                    <button class="btn btn-secondary" type="button" id="add-item">Adicionar item</button>
                     <button class="btn" type="submit">Salvar invoice</button>
                 </div>
             </div>
@@ -110,6 +113,7 @@
         const localPreviewBox = document.getElementById('invoice-local-preview-box');
         const defaultDailyRate = '{{ default_daily_rate|default('0.00') }}';
         const defaultHourlyRate = '{{ default_hourly_rate|default('0.00') }}';
+        const defaultAnnualFixedRate = '{{ default_annual_fixed_rate|default('0.00') }}';
         const defaultHourlyHoursPerBusinessDay = Number('{{ default_hourly_hours_per_business_day|default('8.00') }}');
         const userLocalCurrency = '{{ user_local_currency|default('') }}';
         const fxPreviewUrl = '{{ path('app_invoice_fx_preview') }}';
@@ -161,6 +165,8 @@
                 unitPriceField.value = defaultDailyRate;
             } else if (typeField.value === 'hourly_rate') {
                 unitPriceField.value = defaultHourlyRate;
+            } else if (typeField.value === 'one_off') {
+                unitPriceField.value = defaultAnnualFixedRate;
             }
         };
 

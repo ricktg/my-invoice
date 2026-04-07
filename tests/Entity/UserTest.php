@@ -31,9 +31,11 @@ final class UserTest extends TestCase
             ->setJobDescription('  Senior Engineer  ')
             ->setDefaultDailyRate('950.00')
             ->setDefaultHourlyRate('120.00')
+            ->setDefaultAnnualFixedRate('25000.00')
             ->setDefaultHourlyHoursPerBusinessDay('7.50')
             ->setDefaultDailyRateCurrency(' cad ')
-            ->setLocalCurrency(' brl ');
+            ->setLocalCurrency(' brl ')
+            ->setDefaultInvoiceLanguage(' pt-BR ');
 
         $user->eraseCredentials();
 
@@ -41,9 +43,11 @@ final class UserTest extends TestCase
         self::assertSame('Senior Engineer', $user->getJobDescription());
         self::assertSame('950.00', $user->getDefaultDailyRate());
         self::assertSame('120.00', $user->getDefaultHourlyRate());
+        self::assertSame('25000.00', $user->getDefaultAnnualFixedRate());
         self::assertSame('7.50', $user->getDefaultHourlyHoursPerBusinessDay());
         self::assertSame('CAD', $user->getDefaultDailyRateCurrency());
         self::assertSame('BRL', $user->getLocalCurrency());
+        self::assertSame('pt-BR', $user->getDefaultInvoiceLanguage());
     }
 
     public function testNullableProfileFields(): void
@@ -52,15 +56,19 @@ final class UserTest extends TestCase
             ->setJobDescription(null)
             ->setDefaultDailyRate(null)
             ->setDefaultHourlyRate(null)
+            ->setDefaultAnnualFixedRate(null)
             ->setDefaultHourlyHoursPerBusinessDay(null)
             ->setDefaultDailyRateCurrency(null)
-            ->setLocalCurrency(null);
+            ->setLocalCurrency(null)
+            ->setDefaultInvoiceLanguage(null);
 
         self::assertNull($user->getJobDescription());
         self::assertNull($user->getDefaultDailyRate());
         self::assertNull($user->getDefaultHourlyRate());
+        self::assertNull($user->getDefaultAnnualFixedRate());
         self::assertNull($user->getDefaultHourlyHoursPerBusinessDay());
         self::assertNull($user->getDefaultDailyRateCurrency());
         self::assertNull($user->getLocalCurrency());
+        self::assertNull($user->getDefaultInvoiceLanguage());
     }
 }
