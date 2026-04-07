@@ -47,12 +47,10 @@ final class InvoiceControllerTest extends DatabaseWebTestCase
         self::assertSame('USD', $currencyValue);
     }
 
-    public function testNewInvoiceSubmitRecalculatesHourlyQuantityUsingReferenceMonth(): void
+    public function testNewInvoiceSubmitKeepsManuallyTypedHourlyQuantity(): void
     {
         $client = static::createClient();
         $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
-        /** @var BusinessDayCalculator $businessDayCalculator */
-        $businessDayCalculator = self::getContainer()->get(BusinessDayCalculator::class);
 
         [$user, $issuer, $recipient] = $this->createUserAndCompanies();
         $client->loginUser($user);
@@ -60,8 +58,6 @@ final class InvoiceControllerTest extends DatabaseWebTestCase
         self::assertResponseIsSuccessful();
 
         $referenceMonth = '2026-02';
-        $businessDays = $businessDayCalculator->countWeekdaysInMonth($referenceMonth);
-        $expectedQuantity = number_format($businessDays * 8.0, 2, '.', '');
 
         $form = $crawler->selectButton('Salvar invoice')->form([
             'invoice[number]' => 'INV-HOURLY-001',
@@ -84,7 +80,7 @@ final class InvoiceControllerTest extends DatabaseWebTestCase
         $invoice = $this->entityManager->getRepository(Invoice::class)->findOneBy(['number' => 'INV-HOURLY-001']);
         self::assertInstanceOf(Invoice::class, $invoice);
         self::assertCount(1, $invoice->getItems());
-        self::assertEquals((float) $expectedQuantity, (float) $invoice->getItems()->first()->getQuantity());
+        self::assertEquals(1.0, (float) $invoice->getItems()->first()->getQuantity());
     }
 
     public function testEditInvoiceSubmitKeepsManuallyTypedQuantity(): void
