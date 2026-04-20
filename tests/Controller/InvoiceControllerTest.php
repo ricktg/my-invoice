@@ -217,6 +217,63 @@ final class InvoiceControllerTest extends DatabaseWebTestCase
         self::assertEquals(11.0, (float) $updated->getItems()->first()->getQuantity());
     }
 
+    public function testEditInvoiceRecalculatesDueDateFromIssueDate(): void
+    {
+        $client = static::createClient();
+        $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
+
+        [$user, $issuer, $recipient] = $this->createUserAndCompanies();
+
+        $invoice = (new Invoice())
+            ->setOwner($user)
+            ->setNumber('INV-DUE-DATE-EDIT')
+            ->setIssueDate(new \DateTimeImmutable('2026-03-05'))
+            ->setDueDate(new \DateTimeImmutable('2026-03-15'))
+            ->setIssuerCompany($issuer)
+            ->setRecipientCompany($recipient)
+            ->setCurrency('USD')
+            ->setReferenceMonth('2026-03');
+
+        $invoice->addItem(
+            (new InvoiceItem())
+                ->setBillingType(InvoiceItem::BILLING_DAILY_RATE)
+                ->setDescription('Daily service')
+                ->setQuantity('10')
+                ->setUnitPrice('850')
+        );
+
+        $this->entityManager->persist($invoice);
+        $this->entityManager->flush();
+
+        $client->loginUser($user);
+        $crawler = $client->request('GET', sprintf('/invoices/%d/edit', $invoice->getId()));
+        self::assertResponseIsSuccessful();
+
+        $form = $crawler->selectButton('Salvar invoice')->form([
+            'invoice[number]' => 'INV-DUE-DATE-EDIT',
+            'invoice[issueDate]' => '2026-04-01',
+            'invoice[dueDate]' => '2026-04-30',
+            'invoice[issuerCompany]' => (string) $issuer->getId(),
+            'invoice[recipientCompany]' => (string) $recipient->getId(),
+            'invoice[currency]' => 'USD',
+            'invoice[language]' => 'en',
+            'invoice[referenceMonth]' => '2026-04',
+            'invoice[notes]' => '',
+            'invoice[items][0][billingType]' => InvoiceItem::BILLING_DAILY_RATE,
+            'invoice[items][0][description]' => 'Daily service',
+            'invoice[items][0][quantity]' => '10',
+            'invoice[items][0][unitPrice]' => '850',
+        ]);
+        $client->submit($form);
+
+        self::assertResponseRedirects();
+        $this->entityManager->clear();
+
+        $updated = $this->entityManager->getRepository(Invoice::class)->find($invoice->getId());
+        self::assertInstanceOf(Invoice::class, $updated);
+        self::assertSame('2026-04-11', $updated->getDueDate()?->format('Y-m-d'));
+    }
+
     public function testNewInvoicePrefillsAnnualFixedAsMonthlyOneOffItem(): void
     {
         $client = static::createClient();

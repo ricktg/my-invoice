@@ -298,8 +298,14 @@
             if (!issueDateInput || !dueDateInput || !issueDateInput.value) {
                 return;
             }
-            const issueDate = new Date(`${issueDateInput.value}T00:00:00`);
-            issueDate.setDate(issueDate.getDate() + 10);
+            const parts = issueDateInput.value.split('-').map((part) => Number(part));
+            if (parts.length !== 3 || parts.some((part) => Number.isNaN(part))) {
+                return;
+            }
+
+            const [year, month, day] = parts;
+            const issueDate = new Date(Date.UTC(year, month - 1, day));
+            issueDate.setUTCDate(issueDate.getUTCDate() + 10);
             dueDateInput.value = issueDate.toISOString().slice(0, 10);
         };
 
@@ -336,6 +342,7 @@
         referenceMonthInput?.addEventListener('change', updateRateQuantitiesByReferenceMonth);
         referenceMonthInput?.addEventListener('input', updateRateQuantitiesByReferenceMonth);
         issueDateInput?.addEventListener('change', updateDueDateFromIssueDate);
+        issueDateInput?.addEventListener('input', updateDueDateFromIssueDate);
         container?.addEventListener('change', (event) => {
             const target = event.target;
             if (target instanceof HTMLSelectElement && target.id.endsWith('_billingType')) {

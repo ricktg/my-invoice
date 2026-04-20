@@ -45,35 +45,77 @@ Inclui autenticação, cadastro de empresas/clientes, geração de invoice (dail
 - Dompdf
 - Docker Compose
 
-## Como rodar localmente (Docker)
+## Requisitos mínimos
 
-1. Suba os containers:
+- Git 2.39+
+- Docker Desktop 4.20+ (ou Docker Engine compatível)
+- Docker Compose v2 (`docker compose`)
+- Bash (Linux/macOS) ou PowerShell 7+ (Windows)
+- Porta `8282` livre para a aplicação local
 
-```bash
-docker compose up -d --build
-```
+> Os scripts do projeto validam automaticamente a presença de Docker e Docker Compose.
 
-2. Instale as dependências PHP:
+## Instalação local (apenas scripts)
 
-```bash
-docker compose exec phpi composer install
-```
+### Linux/macOS (Bash)
 
-3.  Compila os assets:
-
-```bash
-docker compose exec phpi php bin/console asset-map:compile
-```
-
-4.  Rode as migrations:
+1. Suba a stack:
 
 ```bash
-docker compose exec phpi php bin/console doctrine:migrations:migrate --no-interaction
+./scripts/dev.sh up
 ```
 
-5.  Acesse no navegador:
+2. Instale dependências:
 
-- App: `http://localhost:8282`
+```bash
+./scripts/dev.sh install
+```
+
+3. Rode migrations:
+
+```bash
+./scripts/dev.sh migrate
+```
+
+4. Compile os assets:
+
+```bash
+./scripts/dev.sh assets
+```
+
+5. Acesse:
+
+- `http://localhost:8282`
+
+### Windows (PowerShell)
+
+1. Suba a stack:
+
+```powershell
+.\scripts\dev.ps1 up
+```
+
+2. Instale dependências:
+
+```powershell
+.\scripts\dev.ps1 install
+```
+
+3. Rode migrations:
+
+```powershell
+.\scripts\dev.ps1 migrate
+```
+
+4. Compile os assets:
+
+```powershell
+.\scripts\dev.ps1 assets
+```
+
+5. Acesse:
+
+- `http://localhost:8282`
 
 ## Configuração de ambiente
 
@@ -101,64 +143,42 @@ MAILER_DSN=smtp://user:pass@smtp.example.com:587?encryption=tls&auth_mode=login
 ## Comandos úteis
 
 ```bash
-# Limpar cache
-docker compose exec phpi php bin/console cache:clear
-
-# Listar rotas
-docker compose exec phpi php bin/console debug:router
-
-# Rodar migrations
-docker compose exec phpi php bin/console doctrine:migrations:migrate --no-interaction
-
-# Validar templates Twig
-docker compose exec phpi php bin/console lint:twig templates
+# Linux/macOS
+./scripts/dev.sh cache-clear
+./scripts/dev.sh console debug:router
+./scripts/dev.sh test
+./scripts/dev.sh coverage
+./scripts/dev.sh console lint:twig templates
 ```
 
-## Atalhos para Docker
+```powershell
+# Windows PowerShell
+.\scripts\dev.ps1 cache-clear
+.\scripts\dev.ps1 console debug:router
+.\scripts\dev.ps1 test
+.\scripts\dev.ps1 coverage
+.\scripts\dev.ps1 console lint:twig templates
+```
 
-Para facilitar o dia a dia, use o script `scripts/dev.sh`:
+Ajuda completa dos scripts:
 
 ```bash
-# Subir ambiente
-./scripts/dev.sh up
-
-# Instalar dependências
-./scripts/dev.sh install
-
-# Rodar migrations
-./scripts/dev.sh migrate
-
-# Rodar testes
-./scripts/dev.sh test
-
-# Compilar assets
-./scripts/dev.sh assets
-
-# Ver ajuda completa
 ./scripts/dev.sh help
 ```
 
-No PowerShell, use `scripts/dev.ps1`:
-
 ```powershell
-.\scripts\dev.ps1 up
-.\scripts\dev.ps1 install
-.\scripts\dev.ps1 migrate
-.\scripts\dev.ps1 test
-.\scripts\dev.ps1 assets
 .\scripts\dev.ps1 help
 ```
 
 ## Upgrade da aplicação por versão
 
-Esta seção descreve como atualizar a aplicação para uma versão específica (tag Git), com scripts prontos para Bash e PowerShell.
+Esta seção descreve como atualizar a aplicação para uma versão específica (tag Git) usando apenas scripts.
 
-### Pré-requisitos
+### Pré-requisitos para upgrade
 
-- Docker + Docker Compose v2 instalados
-- Git instalado
-- Executar os comandos na raiz do repositório
-- Tag de versão existente no remoto (ex.: `v1.3.0`)
+- Requisitos mínimos da seção anterior
+- Executar na raiz do repositório
+- Tag existente no remoto (ex.: `v1.3.0`)
 
 ### Script Bash (macOS/Linux)
 
@@ -172,6 +192,12 @@ Exemplo:
 
 ```bash
 ./scripts/upgrade.sh v1.3.0
+```
+
+Com alterações locais não commitadas:
+
+```bash
+./scripts/upgrade.sh v1.3.0 --allow-dirty
 ```
 
 ### Script PowerShell (Windows/macOS/Linux)
@@ -188,30 +214,20 @@ Exemplo:
 .\scripts\upgrade.ps1 -Version v1.3.0
 ```
 
-### O que os scripts fazem automaticamente
-
-1. Validam pré-requisitos (`git`, `docker`, `docker compose`).
-2. Buscam tags remotas (`git fetch --tags origin`).
-3. Criam branch local `upgrade/<versao>` a partir da tag.
-4. Sobem/atualizam containers (`docker compose up -d --build`).
-5. Instalam dependências (`composer install`).
-6. Executam migrations (`doctrine:migrations:migrate`).
-7. Compilam assets (`asset-map:compile`).
-8. Limpam cache (`cache:clear`).
-
-### Repositório com alterações locais (dirty)
-
-Por padrão, o script bloqueia upgrade se houver alterações não commitadas.
-
-Se você quiser executar mesmo assim:
-
-```bash
-./scripts/upgrade.sh v1.3.0 --allow-dirty
-```
-
 ```powershell
 .\scripts\upgrade.ps1 -Version v1.3.0 -AllowDirty
 ```
+
+### O que os scripts de upgrade fazem automaticamente
+
+1. Validam pré-requisitos (`git`, `docker`, `docker compose`).
+2. Buscam tags remotas.
+3. Criam branch local `upgrade/<versao>` a partir da tag.
+4. Sobem/atualizam containers.
+5. Instalam dependências.
+6. Executam migrations.
+7. Compilam assets.
+8. Limpam cache.
 
 ### Fluxo recomendado antes de atualizar em produção
 
